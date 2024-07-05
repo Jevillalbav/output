@@ -186,15 +186,6 @@ col1, col2 = st.columns(2)
 
 
 def show_cashflow_2():
-    b = cashflows[(cashflows["geography_name"] == st.session_state.geo)].copy().sort_values("date")
-
-    c = b[['date', 'price', 'mo_rent']].set_index("date").copy()
-    c.index = pd.to_datetime(c.index)
-    c = c.round(0).resample("M").last().interpolate(method='pchip')
-    
-    c_ret = c.pct_change().fillna(0).add(1).cumprod().sub(1)
-    c_ret = c_ret.applymap("{:.2%}".format)
-
     a = analises.loc[st.session_state.geo,:].drop(index=["Market", "State", "Population", "Submarket"]).copy()
     a.loc["CAGR"] = format(a.loc["CAGR"], ".2%")
     a.loc["NOI Cap Rate Comp."] = format(a.loc["NOI Cap Rate Comp."], ".2%")
@@ -213,15 +204,15 @@ def show_cashflow_2():
     s.loc["Spread"] = format(s.loc["Spread"], ".2%")
     s.loc["Net_Rate"] = format(s.loc["Net_Rate"], ".2%")
 
-    return c, c_ret , a , s
+    return  a , s
 
 with col1:
     st.subheader("Summary")
-    st.dataframe(show_cashflow_2()[3])
+    st.dataframe(show_cashflow_2()[1])
 
 with col2:
     st.subheader("Metrics")
-    st.dataframe(show_cashflow_2()[2] )
+    st.dataframe(show_cashflow_2()[0] )
 
 
 st.subheader("Cash Flows")
